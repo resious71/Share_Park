@@ -136,11 +136,13 @@ switch ($action) {
     case 'reset_all':
         $id = input_int('id');
         $all = $action === 'reset_all';
-        $count = json_update('users', function (&$users) use ($id, $all) {
+        $lastDownloadId = next_id(json_read('downloads')) - 1;
+        $count = json_update('users', function (&$users) use ($id, $all, $lastDownloadId) {
             $n = 0;
             foreach ($users as &$u) {
                 if ($all || (int)$u['id'] === $id) {
                     $u['limit_reset_at'] = now();
+                    $u['limit_reset_download_id'] = $lastDownloadId;
                     $n++;
                 }
             }

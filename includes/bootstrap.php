@@ -543,12 +543,16 @@ function downloads_used(array $user, ?array $downloads = null): int
 {
     $downloads ??= json_read('downloads');
     $since = period_start();
-    if (!empty($user['limit_reset_at'])) {
+    // 관리자 초기화: 초기화 시점의 마지막 다운로드 ID 이후 기록만 계산
+    // (시각은 초 단위라 같은 초에 기록된 다운로드를 구분할 수 없음)
+    $afterId = isset($user['limit_reset_download_id']) ? (int)$user['limit_reset_download_id'] : null;
+    if ($afterId === null && !empty($user['limit_reset_at'])) {
         $since = max($since, (int)strtotime($user['limit_reset_at']));
     }
     $count = 0;
     foreach ($downloads as $d) {
-        if ((int)$d['user_id'] === (int)$user['id'] && strtotime($d['downloaded_at']) >= $since) {
+        if ((int)$d['user_id'] === (int)$user['id'] && strtotime($d['downloaded_at']) >= $since
+            && ($afterId === null || (int)$d['id'] > $afterId)) {
             $count++;
         }
     }
