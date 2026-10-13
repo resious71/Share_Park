@@ -1,0 +1,62 @@
+name: 🐛 버그 제보
+description: 예상과 다르게 동작하는 문제를 알려 주세요.
+title: "[버그] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        제보해 주셔서 감사합니다! 보안 취약점은 이 양식 대신 [SECURITY.md](https://github.com/resious71/Share_Park/blob/main/SECURITY.md)의 방법으로 알려 주세요.
+  - type: textarea
+    id: description
+    attributes:
+      label: 어떤 문제가 있나요?
+      description: 무엇이 잘못되었는지 설명해 주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 재현 방법
+      placeholder: |
+        1. 관리자로 로그인
+        2. 도서 탭에서 PDF 업로드
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대한 동작
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 스크린샷 · 오류 메시지
+      description: 화면의 오류 메시지, 브라우저 콘솔, PHP 오류 로그가 있다면 붙여 주세요.
+  - type: input
+    id: version
+    attributes:
+      label: Share Park 버전
+      placeholder: "1.0.1 (config.php 의 APP_VERSION)"
+  - type: dropdown
+    id: server
+    attributes:
+      label: 웹 서버
+      options:
+        - PHP 내장 서버
+        - Apache
+        - Nginx
+        - XAMPP / WAMP
+        - 기타
+  - type: input
+    id: php
+    attributes:
+      label: PHP 버전 · 운영체제
+      placeholder: "PHP 8.3 / Windows 11"
+  - type: input
+    id: browser
+    attributes:
+      label: 브라우저
+      placeholder: "Chrome 140"
