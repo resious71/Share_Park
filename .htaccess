@@ -1,0 +1,17 @@
+# Share Park - Apache 설정
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_php.c>
+    php_value upload_max_filesize 64M
+    php_value post_max_size 70M
+    php_value max_execution_time 120
+    php_value memory_limit 256M
+</IfModule>
+
+# 숨김 파일 및 설정/데이터 직접 접근 차단
+<FilesMatch "^\.|\.(json|md|ini)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</FilesMatch>
