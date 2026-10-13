@@ -1,0 +1,10 @@
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.pdf binary
+*.epub binary
+
+# 배포 아카이브에서 제외
+/.github export-ignore
+/tests export-ignore
+/docs/screenshots export-ignore
