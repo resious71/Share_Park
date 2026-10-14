@@ -17,7 +17,7 @@ PDF/EPUB 전자책을 올리고, 로그인한 사용자가 *개인용도 동의�
 
 [주요 기능](#-주요-기능) · [스크린샷](#-스크린샷) · [빠른 시작](#-빠른-시작) · [설치 가이드](#-설치-가이드) · [보안](#-보안) · [기여하기](#-기여하기) · [English](README.en.md)
 
-<img src="docs/screenshots/dashboard.png" alt="Share Park 도서 목록 화면" width="860">
+<img src="docs/screenshots/dashboard.jpg" alt="Share Park 도서 목록 화면" width="860">
 
 </div>
 
@@ -62,18 +62,18 @@ PDF/EPUB 전자책을 올리고, 로그인한 사용자가 *개인용도 동의�
 
 | 로그인 | 다운로드 동의서 |
 |:---:|:---:|
-| <img src="docs/screenshots/login.png" alt="로그인 화면" width="420"> | <img src="docs/screenshots/agreement.png" alt="다운로드 동의서 모달" width="420"> |
+| <img src="docs/screenshots/login.jpg" alt="로그인 화면" width="420"> | <img src="docs/screenshots/agreement.jpg" alt="다운로드 동의서 모달" width="420"> |
 | **관리자 · 도서 관리** | **관리자 · 다운로드 통계** |
-| <img src="docs/screenshots/admin-books.png" alt="도서 관리 화면" width="420"> | <img src="docs/screenshots/admin-downloads.png" alt="다운로드 통계 화면" width="420"> |
+| <img src="docs/screenshots/admin-books.jpg" alt="도서 관리 화면" width="420"> | <img src="docs/screenshots/admin-downloads.jpg" alt="다운로드 통계 화면" width="420"> |
 | **관리자 · 설정** | **관리자 · 가이드 & FAQ** |
-| <img src="docs/screenshots/admin-settings.png" alt="설정 화면" width="420"> | <img src="docs/screenshots/admin-guide.png" alt="가이드와 FAQ 화면" width="420"> |
+| <img src="docs/screenshots/admin-settings.jpg" alt="설정 화면" width="420"> | <img src="docs/screenshots/admin-guide.jpg" alt="가이드와 FAQ 화면" width="420"> |
 | **첫 방문 둘러보기** | **마이페이지** |
-| <img src="docs/screenshots/admin-tour.png" alt="관리자 둘러보기" width="420"> | <img src="docs/screenshots/mypage.png" alt="마이페이지 다운로드 히스토리" width="420"> |
+| <img src="docs/screenshots/admin-tour.jpg" alt="관리자 둘러보기" width="420"> | <img src="docs/screenshots/mypage.jpg" alt="마이페이지 다운로드 히스토리" width="420"> |
 
 <details>
 <summary>📱 모바일 화면 보기</summary>
 <br>
-<img src="docs/screenshots/mobile.png" alt="모바일 도서 목록" width="300">
+<img src="docs/screenshots/mobile.jpg" alt="모바일 도서 목록" width="300">
 </details>
 
 ## 🚀 빠른 시작
@@ -266,6 +266,11 @@ Share_Park/
 
 Share Park는 **본인이 정당하게 소유하거나 배포 권한이 있는 전자책**을 개인적으로 관리·공유하기 위한 도구입니다.
 저작권이 있는 자료를 무단으로 배포하는 데 사용하지 마세요. 사용에 따른 책임은 운영자에게 있습니다.
+
+## 🙏 감사의 말
+
+스크린샷에 쓰인 책 표지는 [Standard Ebooks](https://standardebooks.org/)(CC0)의 공개 도메인 고전 표지입니다.
+표지 그림은 모두 저작권이 만료된 작품이며, 실제 서비스에서는 직접 등록한 책의 표지가 표시됩니다.
 
 ## 📄 라이선스
 
