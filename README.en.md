@@ -14,7 +14,7 @@ No database required: it runs on **plain PHP + JSON files**.
 
 [한국어](README.md)
 
-<img src="docs/screenshots/dashboard.png" alt="Share Park book list" width="860">
+<img src="docs/screenshots/dashboard.jpg" alt="Share Park book list" width="860">
 
 </div>
 
@@ -60,6 +60,10 @@ Issues and pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING
 ## Disclaimer
 
 Share Park is intended for e-books you legally own or have the right to share. Do not use it to distribute copyrighted material without permission.
+
+## Credits
+
+Book covers in the screenshots are public domain classics from [Standard Ebooks](https://standardebooks.org/) (CC0).
 
 ## License
 

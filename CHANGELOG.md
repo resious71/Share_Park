@@ -5,6 +5,9 @@
 
 ## [Unreleased]
 
+### 변경
+- README 스크린샷을 실제 책 표지(Standard Ebooks 공개 도메인 고전)로 다시 촬영하고 JPG로 바꿔 용량 축소 (약 3.1MB → 1.0MB)
+
 ### 추가
 - 오픈소스 저장소 구성: README(배지 · 스크린샷), 영문 README, 기여 가이드, 행동 강령, 보안 정책, 이슈 · PR 템플릿
 - GitHub Actions CI: PHP 8.1 · 8.2 · 8.3 문법 검사, JavaScript 문법 검사, 스모크 테스트
