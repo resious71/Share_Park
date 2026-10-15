@@ -21,6 +21,7 @@ function settings_payload(): array
             'max_file_size_mb'      => round($s['max_file_size'] / 1048576, 1),
             'max_image_size_mb'     => round($s['max_image_size'] / 1048576, 1),
             'days_ignore_agreement' => (int)$s['days_ignore_agreement'],
+            'allow_member_upload'   => !empty($s['allow_member_upload']),
             'books_path'            => $s['books_path'],
             'covers_path'           => $s['covers_path'],
             'agreement_text'        => $s['agreement_text'],
@@ -117,6 +118,7 @@ if ($action === 'reset_agreement') {
     $new['max_file_size'] = (int)round($fileMb * 1048576);
     $new['max_image_size'] = (int)round($imgMb * 1048576);
     $new['days_ignore_agreement'] = $days;
+    $new['allow_member_upload'] = input_bool('allow_member_upload');
     $new['agreement_text'] = $agreement;
 }
 

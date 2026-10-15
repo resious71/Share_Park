@@ -2,9 +2,11 @@
 /** 사용자 마이페이지 */
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/layout.php';
+require_once __DIR__ . '/includes/upload-form.php';
 
 $user = require_login_page();
 $limit = download_limit_info($user);
+$canUpload = can_upload_books($user);
 
 render_head('마이페이지', 'mypage');
 render_header($user, 'mypage');
@@ -15,6 +17,7 @@ render_header($user, 'mypage');
   <div class="tabs" role="tablist">
     <button class="tab active" role="tab" data-tab="profile" aria-selected="true">프로필</button>
     <button class="tab" role="tab" data-tab="history" aria-selected="false">다운로드 히스토리</button>
+    <button class="tab" role="tab" data-tab="mybooks" aria-selected="false">📚 내 책</button>
   </div>
 
   <section class="tab-panel active" id="tab-profile" role="tabpanel">
@@ -72,5 +75,28 @@ render_header($user, 'mypage');
       <div id="history-pagination" class="pagination"></div>
     </div>
   </section>
+
+  <section class="tab-panel" id="tab-mybooks" role="tabpanel" hidden>
+    <?php if ($canUpload): ?>
+      <?php render_upload_form(); ?>
+    <?php else: ?>
+      <div class="alert alert-warning">🔒 지금은 관리자만 책을 등록할 수 있습니다. 등록하고 싶은 책이 있다면 관리자에게 문의해 주세요.</div>
+    <?php endif; ?>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">내가 등록한 책</h2>
+        <span class="muted small">내가 등록한 책만 수정·삭제할 수 있습니다</span>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>표지</th><th>제목</th><th>저자</th><th>형식</th><th>등록일</th><th>다운로드</th><th class="actions-col">관리</th></tr></thead>
+          <tbody id="mybooks-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 </main>
-<?php render_footer(['js/mypage.js']);
+<?php if ($canUpload): ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+<?php endif; ?>
+<?php render_footer(['js/uploader.js', 'js/mypage.js']);

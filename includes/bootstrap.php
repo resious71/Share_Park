@@ -505,18 +505,73 @@ function cover_url(array $book): string
     return 'api/cover.php?id=' . (int)$book['id'] . '&v=' . $v;
 }
 
+/**
+ * 책별 다운로드 수, 인기 순위, 사용자 이름 (요청당 한 번 계산)
+ * @return array{counts: array<int,int>, ranks: array<int,int>, names: array<int,string>}
+ */
+function book_stats(bool $refresh = false): array
+{
+    static $cache = null;
+    if ($cache !== null && !$refresh) {
+        return $cache;
+    }
+    $counts = [];
+    foreach (json_read('downloads') as $d) {
+        $counts[(int)$d['book_id']] = ($counts[(int)$d['book_id']] ?? 0) + 1;
+    }
+    $existing = array_map(fn($b) => (int)$b['id'], json_read('books'));
+    $popular = array_filter($counts, fn($n, $id) => $n > 0 && in_array($id, $existing, true), ARRAY_FILTER_USE_BOTH);
+    // 다운로드 수가 같으면 먼저 등록된 책이 앞 순위
+    uksort($popular, fn($a, $b) => [$popular[$b], $a] <=> [$popular[$a], $b]);
+    $ranks = [];
+    foreach (array_slice(array_keys($popular), 0, POPULAR_BOOK_COUNT) as $i => $id) {
+        $ranks[$id] = $i + 1;
+    }
+    $names = [];
+    foreach (json_read('users') as $u) {
+        $names[(int)$u['id']] = $u['username'];
+    }
+    return $cache = ['counts' => $counts, 'ranks' => $ranks, 'names' => $names];
+}
+
+/** 등록자 ID (이전 버전에서 등록된 책은 관리자 등록으로 간주) */
+function book_owner_id(array $b): int
+{
+    return (int)($b['owner_id'] ?? 0);
+}
+
 function public_book(array $b): array
 {
+    $stats = book_stats();
+    $id = (int)$b['id'];
+    $owner = book_owner_id($b);
     return [
-        'id'         => (int)$b['id'],
-        'title'      => $b['title'],
-        'author'     => $b['author'],
-        'format'     => $b['format'],
-        'filesize'   => (int)$b['filesize'],
-        'filesize_h' => format_bytes((int)$b['filesize']),
-        'created_at' => $b['created_at'],
-        'cover_url'  => cover_url($b),
+        'id'             => $id,
+        'title'          => $b['title'],
+        'author'         => $b['author'],
+        'description'    => (string)($b['description'] ?? ''),
+        'format'         => $b['format'],
+        'filesize'       => (int)$b['filesize'],
+        'filesize_h'     => format_bytes((int)$b['filesize']),
+        'created_at'     => $b['created_at'],
+        'cover_url'      => cover_url($b),
+        'owner_id'       => $owner,
+        'owner_name'     => $owner ? ($stats['names'][$owner] ?? '탈퇴한 회원') : '관리자',
+        'download_count' => $stats['counts'][$id] ?? 0,
+        'popular_rank'   => $stats['ranks'][$id] ?? null,
     ];
+}
+
+/** 책을 수정·삭제할 수 있는지 (관리자 또는 등록한 회원) */
+function can_manage_book(array $user, array $book): bool
+{
+    return is_admin($user) || (book_owner_id($book) !== 0 && book_owner_id($book) === (int)$user['id']);
+}
+
+/** 회원이 책을 등록할 수 있는지 */
+function can_upload_books(array $user): bool
+{
+    return is_admin($user) || !empty(setting('allow_member_upload'));
 }
 
 // ===========================================================================

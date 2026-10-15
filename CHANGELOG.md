@@ -5,10 +5,26 @@
 
 ## [Unreleased]
 
-### 변경
-- README 스크린샷을 실제 책 표지(Standard Ebooks 공개 도메인 고전)로 다시 촬영하고 JPG로 바꿔 용량 축소 (약 3.1MB → 1.0MB)
+## [1.1.0] - 2026-10-15
 
 ### 추가
+- **회원 책 등록**: 일반 회원도 마이페이지 → 📚 내 책 탭에서 책을 등록하고, 자신이 등록한 책만 수정·삭제할 수 있습니다. 관리자 설정 "일반 회원의 책 등록 허용"으로 끌 수 있습니다 (기본값: 허용).
+- **책 상세 정보**: 책 카드를 누르면 표지, 제목, 저자, 다운로드 횟수, 파일 크기, 등록일, 등록자, 책 소개, 내 다운로드 기록이 담긴 상세 창이 열리고 바로 다운로드할 수 있습니다. 키보드(Enter)로도 열 수 있습니다.
+- **인기 도서 TOP 3**: 다운로드가 가장 많은 책 3권을 도서 목록에서 옅은 파랑 굵은 테두리와 표지 오른쪽 아래 🏆 순위 배지로 강조합니다. 정렬에 "인기순"을 추가했습니다.
+- **다운로드 횟수 표시**: 모든 책 카드에 전체 다운로드 횟수를 표시합니다.
+- **책별 다운로드 기록**: 관리자 도서 탭에서 다운로드 횟수를 누르면 그 책을 누가 몇 번, 언제 다운로드했는지 볼 수 있습니다.
+- 책 소개(`description`) 필드: 등록 · 수정 화면에서 입력할 수 있습니다.
+- 관리자 도서 표에 등록자 열 추가, 도서 목록에 "➕ 책 등록" 바로가기 추가
+- FAQ 4개 추가 (총 18개), 도움말 · 가이드 내용 갱신
+- 스모크 테스트 16개 추가 (총 43개)
+
+### 변경
+- 책 등록 · 수정 · 삭제 화면을 관리자와 마이페이지가 함께 쓰도록 공용화 (`includes/upload-form.php`, `js/uploader.js`)
+- `books.json` 에 `owner_id`, `description` 필드 추가. 기존 데이터는 그대로 동작하며, 이전에 등록된 책은 "관리자" 등록으로 표시됩니다.
+- README 스크린샷 갱신 (책 상세, 내 책, 책별 다운로드 기록 추가)
+- README 스크린샷을 실제 책 표지(Standard Ebooks 공개 도메인 고전)로 다시 촬영하고 JPG로 바꿔 용량 축소 (약 3.1MB → 1.0MB)
+
+### 저장소
 - 오픈소스 저장소 구성: README(배지 · 스크린샷), 영문 README, 기여 가이드, 행동 강령, 보안 정책, 이슈 · PR 템플릿
 - GitHub Actions CI: PHP 8.1 · 8.2 · 8.3 문법 검사, JavaScript 문법 검사, 스모크 테스트
 
@@ -36,6 +52,7 @@
 - PDF/EPUB 표지 하이브리드 추출
 - JSON 파일 저장소와 자동 초기화
 
-[Unreleased]: https://github.com/resious71/Share_Park/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/resious71/Share_Park/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/resious71/Share_Park/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/resious71/Share_Park/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/resious71/Share_Park/releases/tag/v1.0.0

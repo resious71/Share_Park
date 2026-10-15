@@ -22,12 +22,15 @@ No database required: it runs on **plain PHP + JSON files**.
 
 ## Features
 
-- **Book tiles**: 2/3/4/6-column responsive grid, search by title or author, sort by title, author, date added or custom order
+- **Book tiles**: 2/3/4/6-column responsive grid, search by title or author, sort by popularity, title, author, date added or custom order
 - **Drag & drop ordering**: each user can save a personal order (mouse, touch and keyboard)
+- **Book details**: click a card to see the cover, description, download count and uploader
+- **Popular top 3**: the three most downloaded books get a light blue border and a 🏆 rank badge; every card shows its download count
+- **Member uploads**: members can upload their own books from My page and edit or delete only those (admins can turn this off)
 - **Personal-use agreement**: users must accept an agreement before every download; it is verified on the server and every acceptance is logged (user, book, time, IP, agreement version). "Don't show again for 7 days" is supported.
 - **Daily download limit**: configurable count and reset time; admins are unlimited
 - **My page**: profile, password change, paginated download history with search
-- **Admin**: user management, book upload with progress bar, edit, delete and display order, settings, download statistics, agreement log, help pop-ups, FAQ and a first-visit tour
+- **Admin**: user management, book upload with progress bar, edit, delete and display order, per-book list of who downloaded it, settings, download statistics, agreement log, help pop-ups, FAQ and a first-visit tour
 - **Hybrid cover extraction**: EPUB cover image, PDF first page (Imagick, `pdftoppm`, ImageMagick or pdf.js in the browser), embedded JPEG, or a generated pastel cover
 
 ## Quick start

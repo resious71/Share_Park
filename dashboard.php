@@ -21,16 +21,20 @@ render_header($user, 'dashboard');
       <label class="sort-label" for="sort-select">정렬</label>
       <select id="sort-select" class="input select">
         <option value="custom">⭐ 커스텀 (내 순서)</option>
+        <option value="popular">🏆 인기순 (다운로드 많은 순)</option>
         <option value="title">가나다 · 제목순</option>
         <option value="author">저자순</option>
         <option value="newest">최근 추가순</option>
         <option value="oldest">오래된 추가순</option>
       </select>
       <button type="button" id="reset-order-btn" class="btn btn-ghost btn-sm" hidden title="관리자가 정한 기본 순서로 되돌립니다">↺ 기본 순서</button>
+      <?php if (can_upload_books($user)): ?>
+      <a href="<?= is_admin($user) ? 'admin.php#books' : 'mypage.php#mybooks' ?>" class="btn btn-sky btn-sm">➕ 책 등록</a>
+      <?php endif; ?>
     </div>
   </section>
 
-  <p id="drag-hint" class="hint" hidden>💡 카드 왼쪽 위의 <strong>⠿</strong> 손잡이를 끌어서 책 순서를 바꿀 수 있어요. 순서는 자동으로 저장됩니다.</p>
+  <p id="drag-hint" class="hint" hidden>💡 카드를 누르면 책 상세 정보를 볼 수 있어요. 왼쪽 위의 <strong>⠿</strong> 손잡이를 끌면 책 순서를 바꿀 수 있고, 순서는 자동으로 저장됩니다.</p>
 
   <section id="book-grid" class="book-grid" aria-live="polite"></section>
 
@@ -45,4 +49,4 @@ render_header($user, 'dashboard');
     <p class="muted">다른 검색어를 입력하거나 철자를 확인해 보세요.</p>
   </div>
 </main>
-<?php render_footer(['js/dragdrop.js', 'js/agreement.js', 'js/dashboard.js']);
+<?php render_footer(['js/dragdrop.js', 'js/agreement.js', 'js/uploader.js', 'js/book-detail.js', 'js/dashboard.js']);
