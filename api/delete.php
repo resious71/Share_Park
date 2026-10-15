@@ -1,20 +1,26 @@
 <?php
-/** 책 삭제 (파일 + 표지 + 메타데이터) */
+/** 책 삭제 (파일 + 표지 + 메타데이터) - 관리자 또는 책을 등록한 회원 */
 require_once __DIR__ . '/../config.php';
 
-require_admin_api();
+$user = require_login_api();
 require_post();
 
 $id = input_int('id');
-$deleted = json_update('books', function (&$books) use ($id) {
+$deleted = json_update('books', function (&$books) use ($id, $user) {
     foreach ($books as $i => $b) {
         if ((int)$b['id'] === $id) {
+            if (!can_manage_book($user, $b)) {
+                return 'forbidden';
+            }
             array_splice($books, $i, 1);
             return $b;
         }
     }
     return null;
 });
+if ($deleted === 'forbidden') {
+    json_error('본인이 등록한 책만 삭제할 수 있습니다.', 403);
+}
 if (!$deleted) {
     json_error('책을 찾을 수 없습니다. 이미 삭제되었을 수 있습니다.', 404);
 }

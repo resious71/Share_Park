@@ -1,12 +1,17 @@
 <?php
 /**
- * 책 업로드 (관리자)
- * 필드: book(파일), title, author, cover(수동 표지, 선택), cover_auto(브라우저에서 렌더링한 PDF 첫 페이지, 선택)
+ * 책 업로드 (관리자 + 회원)
+ * 필드: book(파일), title, author, description(선택), cover(수동 표지, 선택),
+ *       cover_auto(브라우저에서 렌더링한 PDF 첫 페이지, 선택)
+ * 회원 업로드는 설정의 allow_member_upload 가 켜져 있을 때만 허용됩니다.
  */
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/extract-cover.php';
 
-require_admin_api();
+$user = require_login_api();
+if (!can_upload_books($user)) {
+    json_error('현재 관리자만 책을 등록할 수 있습니다. 관리자에게 문의해 주세요.', 403);
+}
 
 // post_max_size 초과 시 $_POST, $_FILES 가 모두 비어 있음
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && empty($_POST) && empty($_FILES)
@@ -112,6 +117,7 @@ if (!move_uploaded_file($file['tmp_name'], $target)) {
 // 제목 / 저자 (비워두면 EPUB 메타데이터 또는 파일명 사용)
 $title = input_str('title', 200);
 $author = input_str('author', 100);
+$description = input_str('description', BOOK_DESCRIPTION_MAX);
 if ($ext === 'epub' && ($title === '' || $author === '')) {
     $meta = extract_epub_metadata($target);
     $title = $title !== '' ? $title : mb_substr($meta['title'], 0, 200);
@@ -140,7 +146,7 @@ if ($manualCover !== null) {
     }
 }
 
-$book = json_update('books', function (&$books) use ($isDuplicate, $original, $stored, $title, $author, $ext, $target, $coverBytes, $coverSource) {
+$book = json_update('books', function (&$books) use ($isDuplicate, $original, $stored, $title, $author, $description, $ext, $target, $coverBytes, $coverSource, $user) {
     if ($isDuplicate($books)) {
         return null;
     }
@@ -154,6 +160,8 @@ $book = json_update('books', function (&$books) use ($isDuplicate, $original, $s
         'id'           => $id,
         'title'        => $title,
         'author'       => $author,
+        'description'  => $description,
+        'owner_id'     => (int)$user['id'],
         'filename'     => $original,
         'stored_name'  => $stored,
         'filesize'     => (int)filesize($target),

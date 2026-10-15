@@ -8,7 +8,7 @@
  */
 
 define('APP_NAME', 'Share Park');
-define('APP_VERSION', '1.0.1');
+define('APP_VERSION', '1.1.0');
 define('APP_ROOT', __DIR__);
 define('DATA_DIR', __DIR__ . '/data');
 
@@ -42,6 +42,12 @@ define('DOWNLOAD_TOKEN_TTL', 300);
 // 마이페이지 다운로드 히스토리 페이지 크기
 define('HISTORY_PAGE_SIZE', 10);
 
+// 도서 목록에 강조 표시할 인기 도서 수
+define('POPULAR_BOOK_COUNT', 3);
+
+// 책 소개 최대 길이
+define('BOOK_DESCRIPTION_MAX', 2000);
+
 // 기본 다운로드 동의서
 define('DEFAULT_AGREEMENT_TEXT', <<<'TXT'
 ## 1. 개인용도 제한
@@ -74,6 +80,7 @@ define('DEFAULT_SETTINGS', [
     'covers_path'           => '',       // 비워두면 DEFAULT_COVERS_DIR 사용
     'agreement_text'        => DEFAULT_AGREEMENT_TEXT,
     'agreement_version'     => '1.0',
+    'allow_member_upload'   => true,     // 일반 회원의 책 등록 허용
 ]);
 
 require_once __DIR__ . '/includes/bootstrap.php';

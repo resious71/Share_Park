@@ -2,6 +2,7 @@
 /** 관리자 페이지 (탭: 계정, 도서, 설정, 다운로드 관리, 가이드) */
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/layout.php';
+require_once __DIR__ . '/includes/upload-form.php';
 
 $user = require_admin_page();
 
@@ -69,55 +70,16 @@ render_header($user, 'admin');
 
   <!-- ===================== 도서 ===================== -->
   <section class="tab-panel" id="tab-books" role="tabpanel" hidden>
-    <div class="card" id="upload-card">
-      <div class="card-header">
-        <h2 class="card-title">새 책 등록 <?= help_btn('books') ?></h2>
-      </div>
-      <form id="upload-form" class="form" novalidate>
-        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="PDF 또는 EPUB 파일 선택">
-          <input type="file" id="book-file" name="book" accept=".pdf,.epub,application/pdf,application/epub+zip" hidden>
-          <div class="dropzone-icon">📥</div>
-          <p class="dropzone-text"><strong>PDF / EPUB 파일</strong>을 여기에 끌어다 놓거나 클릭해서 선택하세요</p>
-          <p class="dropzone-sub muted" id="dropzone-limit"></p>
-          <div id="dropzone-file" class="dropzone-file" hidden></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="book-title">제목</label>
-            <input type="text" id="book-title" name="title" class="input" maxlength="200" placeholder="비워두면 파일에서 자동으로 가져옵니다">
-          </div>
-          <div class="form-group">
-            <label for="book-author">저자</label>
-            <input type="text" id="book-author" name="author" class="input" maxlength="100" placeholder="비워두면 파일에서 자동으로 가져옵니다">
-          </div>
-        </div>
-        <div class="form-row cover-row">
-          <div class="form-group">
-            <label for="book-cover">표지 이미지 (선택)</label>
-            <input type="file" id="book-cover" name="cover" class="input" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
-            <p class="form-help">비워두면 PDF/EPUB에서 표지를 자동 추출합니다. 실패하면 기본 표지가 사용됩니다. (JPG, PNG, WebP)</p>
-          </div>
-          <div class="cover-preview-wrap">
-            <img id="cover-preview" class="cover-preview" alt="표지 미리보기" hidden>
-            <span id="cover-preview-label" class="muted small"></span>
-          </div>
-        </div>
-        <div id="upload-progress" class="progress" hidden>
-          <div class="progress-bar" id="upload-progress-bar"></div>
-          <span class="progress-text" id="upload-progress-text">0%</span>
-        </div>
-        <button type="submit" class="btn btn-primary" id="upload-btn">⬆️ 업로드</button>
-      </form>
-    </div>
+    <?php render_upload_form(help_btn('books')); ?>
 
     <div class="card">
       <div class="card-header">
         <h2 class="card-title">등록된 책 <?= help_btn('order') ?></h2>
-        <span class="muted small">⠿ 손잡이를 끌어 기본 표시 순서를 바꿀 수 있습니다</span>
+        <span class="muted small">⠿ 손잡이로 기본 표시 순서 변경 · 다운로드 횟수를 누르면 다운로드한 사용자를 볼 수 있습니다</span>
       </div>
       <div class="table-wrap">
         <table class="table">
-          <thead><tr><th class="handle-col"></th><th>표지</th><th>제목</th><th>저자</th><th>형식</th><th>등록일</th><th>크기</th><th>다운로드</th><th class="actions-col">관리</th></tr></thead>
+          <thead><tr><th class="handle-col"></th><th>표지</th><th>제목</th><th>저자</th><th>등록자</th><th>형식</th><th>등록일</th><th>크기</th><th>다운로드</th><th class="actions-col">관리</th></tr></thead>
           <tbody id="book-table-body"></tbody>
         </table>
       </div>
@@ -157,6 +119,12 @@ render_header($user, 'admin');
             <input type="number" id="s-max_image_size_mb" name="max_image_size_mb" class="input" min="0.1" max="100" step="0.1" required>
             <p class="form-help">수동 업로드하는 표지 이미지의 최대 크기입니다. <span class="default">기본값: 5MB</span></p>
           </div>
+        </div>
+        <div class="setting-item">
+          <label class="checkbox" for="s-allow_member_upload">
+            <input type="checkbox" id="s-allow_member_upload" name="allow_member_upload">
+            <span><strong>일반 회원의 책 등록 허용</strong><br><span class="form-help">켜면 회원이 마이페이지 → 내 책에서 직접 책을 등록하고, 자신이 등록한 책을 수정·삭제할 수 있습니다. <span class="default">기본값: 허용</span></span></span>
+          </label>
         </div>
         <div class="setting-item">
           <label for="s-days_ignore_agreement">동의서 '다시 보지 않기' 기간 (일)</label>
@@ -273,4 +241,4 @@ render_header($user, 'admin');
   </section>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
-<?php render_footer(['js/dragdrop.js', 'js/admin-guide.js', 'js/admin.js']);
+<?php render_footer(['js/dragdrop.js', 'js/uploader.js', 'js/admin-guide.js', 'js/admin.js']);
