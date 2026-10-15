@@ -34,9 +34,14 @@ render_header($user, 'dashboard');
     </div>
   </section>
 
-  <p id="drag-hint" class="hint" hidden>💡 카드를 누르면 책 상세 정보를 볼 수 있어요. 왼쪽 위의 <strong>⠿</strong> 손잡이를 끌면 책 순서를 바꿀 수 있고, 순서는 자동으로 저장됩니다.</p>
+  <p id="drag-hint" class="hint" hidden>💡 카드를 누르면 책 상세 정보를 볼 수 있어요. 왼쪽 위의 <strong>⠿</strong> 손잡이를 끌면 보고 있는 페이지 안에서 책 순서를 바꿀 수 있고, 순서는 자동으로 저장됩니다.</p>
 
   <section id="book-grid" class="book-grid" aria-live="polite"></section>
+
+  <nav id="book-pager" class="table-footer book-pager" aria-label="도서 목록 페이지" hidden>
+    <span id="book-page-info" class="muted small"></span>
+    <div id="book-pagination" class="pagination"></div>
+  </nav>
 
   <div id="empty-state" class="empty-state card" hidden>
     <div class="empty-icon">📭</div>
