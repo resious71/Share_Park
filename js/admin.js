@@ -33,6 +33,18 @@
   // ===========================================================================
   const userBody = $('#user-table-body');
 
+  /** 사용자별 하루 제한 표시 */
+  function limitHtml(u) {
+    if (u.is_admin) return '<span class="muted small">무제한 (관리자)</span>';
+    const d = u.usage.default_limit;
+    const label = u.download_limit === null
+      ? `<span class="muted">기본 (${d > 0 ? d + '회' : '무제한'})</span>`
+      : (u.download_limit === 0
+        ? '<span class="badge badge-lavender">무제한</span>'
+        : `<span class="badge badge-sky">하루 ${u.download_limit}회</span>`);
+    return `<button type="button" class="link-btn js-limit" title="하루 다운로드 횟수 설정">${label} ✎</button>`;
+  }
+
   function usageHtml(u) {
     if (u.usage.unlimited) return '<span class="badge badge-lavender">무제한</span>';
     const cls = u.usage.can_download ? 'badge-mint' : 'badge-peach';
@@ -48,14 +60,16 @@
           <td><button type="button" class="link-btn js-history" title="다운로드 히스토리 보기">${esc(u.username)}</button>${u.id === ME ? ' <span class="badge badge-gray">나</span>' : ''}</td>
           <td>${u.is_admin ? '<span class="badge badge-lavender">관리자</span>' : '<span class="badge badge-sky">일반</span>'}</td>
           <td class="nowrap">${esc(u.created_at.slice(0, 10))}</td>
+          <td class="nowrap">${limitHtml(u)}</td>
           <td class="nowrap">${usageHtml(u)}</td>
           <td>${u.total_downloads}회</td>
           <td class="actions">
+            <button type="button" class="btn btn-ghost btn-sm js-limit" title="하루 다운로드 횟수 설정" ${u.is_admin ? 'disabled' : ''}>🎚️</button>
             <button type="button" class="btn btn-ghost btn-sm js-password" title="비밀번호 변경">🔑</button>
             <button type="button" class="btn btn-ghost btn-sm js-reset" title="오늘 다운로드 제한 초기화" ${u.usage.unlimited ? 'disabled' : ''}>↺</button>
             <button type="button" class="btn btn-danger btn-sm js-delete" title="계정 삭제" ${u.id === ME ? 'disabled' : ''}>🗑️</button>
           </td>
-        </tr>`).join('') : '<tr class="empty-row"><td colspan="6">등록된 사용자가 없습니다.</td></tr>';
+        </tr>`).join('') : '<tr class="empty-row"><td colspan="7">등록된 사용자가 없습니다.</td></tr>';
       fillAgreementFilter();
     } catch (err) {
       SP.toast(err.message, 'error');
@@ -65,7 +79,7 @@
   $('#user-create-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const f = e.target;
-    const data = { action: 'create', username: f.username.value.trim(), password: f.password.value, is_admin: f.is_admin.value === '1' };
+    const data = { action: 'create', username: f.username.value.trim(), password: f.password.value, is_admin: f.is_admin.value === '1', download_limit: f.download_limit.value.trim() };
     if (!data.username || !data.password) {
       SP.toast('아이디와 비밀번호를 모두 입력해 주세요.', 'warning');
       return;
@@ -85,6 +99,7 @@
 
     if (e.target.closest('.js-history')) showUserHistory(user.id);
     if (e.target.closest('.js-password')) changeUserPassword(user);
+    if (e.target.closest('.js-limit')) changeUserLimit(user);
     if (e.target.closest('.js-reset')) {
       run(SP.api('api/users.php', { data: { action: 'reset_limit', id: user.id } }), { reload: loadUsers });
     }
@@ -99,6 +114,54 @@
       if (ok) run(SP.api('api/users.php', { data: { action: 'delete', id: user.id } }), { reload: loadUsers });
     }
   });
+
+  /** 사용자별 하루 다운로드 횟수 설정 */
+  function changeUserLimit(user) {
+    const d = user.usage.default_limit;
+    const mode = user.download_limit === null ? 'default' : (user.download_limit === 0 ? 'unlimited' : 'custom');
+    const body = document.createElement('form');
+    body.className = 'form';
+    body.id = 'limit-form';
+    body.innerHTML = `
+      <p class="muted small" style="margin-top:0">'${esc(user.username)}' 님이 하루에 다운로드할 수 있는 횟수를 정합니다. 오늘 사용: ${user.usage.used}회</p>
+      <div class="limit-options">
+        <label class="checkbox"><input type="radio" name="mode" value="default" ${mode === 'default' ? 'checked' : ''}>
+          <span><strong>기본 설정 따르기</strong><br><span class="form-help">설정 탭의 하루 다운로드 제한 (현재 ${d > 0 ? d + '회' : '무제한'})</span></span></label>
+        <label class="checkbox"><input type="radio" name="mode" value="custom" ${mode === 'custom' ? 'checked' : ''}>
+          <span><strong>직접 지정</strong>
+            <span class="limit-custom">하루 <input type="number" id="limit-value" class="input" min="1" max="1000" value="${mode === 'custom' ? user.download_limit : Math.max(1, d)}"> 회</span></span></label>
+        <label class="checkbox"><input type="radio" name="mode" value="unlimited" ${mode === 'unlimited' ? 'checked' : ''}>
+          <span><strong>무제한</strong><br><span class="form-help">이 사용자는 다운로드 횟수 제한을 받지 않습니다</span></span></label>
+      </div>`;
+    const sync = () => body.querySelectorAll('.checkbox').forEach((l) => l.classList.toggle('checked', l.querySelector('input').checked));
+    body.addEventListener('change', sync);
+    body.querySelector('#limit-value').addEventListener('focus', () => { body.querySelector('input[value="custom"]').checked = true; sync(); });
+    sync();
+    const save = SP.button('💾 저장', 'btn-primary', null, { type: 'submit', form: 'limit-form' });
+    body.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const m2 = body.querySelector('input[name="mode"]:checked').value;
+      let value = '';
+      if (m2 === 'unlimited') value = 0;
+      if (m2 === 'custom') {
+        value = Number(body.querySelector('#limit-value').value);
+        if (!Number.isInteger(value) || value < 1 || value > 1000) {
+          SP.toast('하루 횟수는 1~1000 사이의 정수로 입력해 주세요.', 'warning');
+          return;
+        }
+      }
+      SP.setLoading(save, true);
+      const res = await run(SP.api('api/users.php', { data: { action: 'set_limit', id: user.id, download_limit: value } }), { reload: loadUsers });
+      SP.setLoading(save, false);
+      if (res) m.close();
+    });
+    const m = SP.openModal({
+      title: '🎚️ 하루 다운로드 횟수',
+      body,
+      size: 'sm',
+      footer: [SP.button('취소', 'btn-ghost', () => m.close()), save],
+    });
+  }
 
   function changeUserPassword(user) {
     const body = document.createElement('form');
