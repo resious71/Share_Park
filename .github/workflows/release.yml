@@ -1,7 +1,8 @@
 name: Release
 
 # 수동 실행: Actions → Release → Run workflow
-# 태그(vX.Y.Z)를 만들고 GitHub 릴리스를 등록합니다.
+# 태그(vX.Y.Z)를 만들고 GitHub 릴리스를 등록합니다. 이미 있는 태그면 그 태그로 릴리스만 만듭니다.
+# 가장 높은 버전만 '최신(Latest)'으로 표시합니다.
 # 릴리스 노트는 docs/releases/vX.Y.Z.md 가 있으면 그 파일을, 없으면 CHANGELOG.md 의 해당 버전 섹션을 사용합니다.
 on:
   workflow_dispatch:
@@ -89,10 +90,14 @@ jobs:
             git tag -a "$tag" "$sha" -m "Share Park $tag"
             git push origin "refs/tags/$tag"
           fi
+          # 가장 높은 버전일 때만 '최신(Latest)' 릴리스로 표시 (이전 버전 릴리스를 나중에 추가해도 최신이 바뀌지 않음)
+          highest=$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*' | sort -V | tail -n 1)
+          if [ "$highest" = "$tag" ]; then latest="--latest"; else latest="--latest=false"; fi
+          echo "가장 높은 버전: $highest → $tag 는 $latest"
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "::warning::릴리스 $tag 가 이미 있어 노트만 갱신합니다."
-            gh release edit "$tag" --title "Share Park $tag" --notes-file notes.md
+            gh release edit "$tag" --title "Share Park $tag" --notes-file notes.md "$latest"
           else
-            gh release create "$tag" --title "Share Park $tag" --notes-file notes.md --verify-tag --latest
+            gh release create "$tag" --title "Share Park $tag" --notes-file notes.md --verify-tag "$latest"
           fi
           echo "릴리스: https://github.com/${GITHUB_REPOSITORY}/releases/tag/$tag" >> "$GITHUB_STEP_SUMMARY"
