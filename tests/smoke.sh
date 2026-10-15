@@ -83,12 +83,29 @@ expect "관리자 제한 초기화" '"ok":true' "$(post_json "$ADMIN" "$T" api/u
 expect "초기화 후 다운로드 가능" '"can_download":true' "$(curl -s -b "$USER" "$BASE/api/check-download-limit.php")"
 expect "통계 집계" '"total":1' "$(curl -s -b "$ADMIN" "$BASE/api/stats.php")"
 
+# v1.4: 사용자별 하루 다운로드 횟수 (reader 는 오늘 1회 사용한 상태)
+expect "일반 사용자의 개인 제한 설정 차단" '관리자만' "$(post_json "$USER" "$U" api/users.php '{"action":"set_limit","id":2,"download_limit":5}')"
+expect "잘못된 개인 제한 값 거부" '0~1000' "$(post_json "$ADMIN" "$T" api/users.php '{"action":"set_limit","id":2,"download_limit":"abc"}')"
+expect "개인 제한 하루 3회 설정" '하루 3회로' "$(post_json "$ADMIN" "$T" api/users.php '{"action":"set_limit","id":2,"download_limit":3}')"
+expect "개인 제한 적용" '"limit":3' "$(curl -s -b "$USER" "$BASE/api/check-download-limit.php")"
+expect "개인 제한 표시값" '"custom":true' "$(curl -s -b "$USER" "$BASE/api/check-download-limit.php")"
+R=$(post_json "$USER" "$U" api/record-agreement.php '{"book_id":1,"agreed":true}')
+URL=$(echo "$R" | sed -n 's/.*"download_url":"\([^"]*\)".*/\1/p')
+expect "개인 제한으로 추가 다운로드" "200" "$(curl -s -o /dev/null -w '%{http_code}' -b "$USER" "$BASE/$URL")"
+expect "개인 제한 무제한(0) 설정" '무제한으로' "$(post_json "$ADMIN" "$T" api/users.php '{"action":"set_limit","id":2,"download_limit":0}')"
+expect "무제한 적용" '"unlimited":true' "$(curl -s -b "$USER" "$BASE/api/check-download-limit.php")"
+expect "기본 설정으로 되돌리기" '전체 설정' "$(post_json "$ADMIN" "$T" api/users.php '{"action":"set_limit","id":2,"download_limit":""}')"
+expect "기본 설정 적용" '"custom":false' "$(curl -s -b "$USER" "$BASE/api/check-download-limit.php")"
+expect "기본 제한 초과 차단 복귀" '"can_download":false' "$(curl -s -b "$USER" "$BASE/api/check-download-limit.php")"
+expect "사용자 추가 시 개인 제한 지정" '"download_limit":5' "$(post_json "$ADMIN" "$T" api/users.php '{"action":"create","username":"heavy","password":"pw","download_limit":5}')"
+post_json "$ADMIN" "$T" api/users.php '{"action":"reset_limit","id":2}' >/dev/null
+
 # v1.1: 다운로드 횟수 · 인기 도서 · 상세 정보
-expect "도서 목록에 다운로드 횟수" '"download_count":1' "$(curl -s -b "$USER" "$BASE/api/search.php")"
+expect "도서 목록에 다운로드 횟수" '"download_count":2' "$(curl -s -b "$USER" "$BASE/api/search.php")"
 expect "인기 도서 순위" '"popular_rank":1' "$(curl -s -b "$USER" "$BASE/api/search.php")"
 DETAIL=$(curl -s -b "$USER" "$BASE/api/books.php?action=detail&id=1")
 expect "책 상세 정보" '"owner_name"' "$DETAIL"
-expect "상세 정보의 내 다운로드 횟수" '"my_downloads":1' "$DETAIL"
+expect "상세 정보의 내 다운로드 횟수" '"my_downloads":2' "$DETAIL"
 
 # v1.1: 책별 다운로드한 사용자 (관리자 전용)
 expect "일반 사용자의 다운로드 사용자 조회 차단" "403" "$(curl -s -o /dev/null -w '%{http_code}' -b "$USER" "$BASE/api/books.php?action=downloaders&id=1")"

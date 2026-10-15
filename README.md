@@ -47,12 +47,13 @@ PDF/EPUB 전자책을 올리고, 로그인한 사용자가 *개인용도 동의�
 
 ### 🛠️ 관리자
 - **계정 관리**: 추가 / 비밀번호 변경 / 삭제 / 제한 초기화 / 히스토리 조회
+- **사용자별 다운로드 횟수**: 사용자마다 하루 N회 · 무제한 · 기본 설정 따르기를 지정 🆕
 - **도서 관리**: 드래그 앤 드롭 업로드(진행률 표시), 수정, 삭제, 표시 순서, 등록자 확인, 페이지네이션(10·20·50권·전체) 🆕
 - **책별 다운로드 기록**: 누가 언제 그 책을 받았는지 사용자별로 확인 🆕
 - **표지 자동 추출**: EPUB 표지, PDF 첫 페이지 (하이브리드)
 - **설정**: 사이트 제목, 하루 다운로드 제한, 초기화 시각, 파일 크기, 저장 경로, 동의서 문구, 회원 책 등록 허용
 - **통계**: 오늘 / 이번 달 / 누적, 최근 다운로드, 인기 도서, 동의 기록
-- **가이드**: 도움말 팝업, FAQ 19개, 첫 방문 둘러보기(투어)
+- **가이드**: 도움말 팝업, FAQ 20개, 첫 방문 둘러보기(투어)
 
 </td>
 </tr>
@@ -77,8 +78,8 @@ PDF/EPUB 전자책을 올리고, 로그인한 사용자가 *개인용도 동의�
 | <img src="docs/screenshots/admin-settings.jpg" alt="설정 화면" width="420"> | <img src="docs/screenshots/admin-guide.jpg" alt="가이드와 FAQ 화면" width="420"> |
 | **첫 방문 둘러보기** | **마이페이지 · 다운로드 히스토리** |
 | <img src="docs/screenshots/admin-tour.jpg" alt="관리자 둘러보기" width="420"> | <img src="docs/screenshots/mypage.jpg" alt="마이페이지 다운로드 히스토리" width="420"> |
-| **로그인** | |
-| <img src="docs/screenshots/login.jpg" alt="로그인 화면" width="420"> | |
+| **관리자 · 사용자별 다운로드 횟수 🆕** | **로그인** |
+| <img src="docs/screenshots/admin-user-limit.jpg" alt="사용자별 하루 다운로드 횟수 설정" width="420"> | <img src="docs/screenshots/login.jpg" alt="로그인 화면" width="420"> |
 
 <details>
 <summary>📱 모바일 화면 보기</summary>
@@ -155,7 +156,7 @@ server {
 | 설정 | 기본값 | 설명 |
 |---|---|---|
 | 사이트 제목 | `Share Park` | 헤더와 브라우저 탭에 표시 |
-| 하루 다운로드 제한 | `1` | `0` 이면 무제한, 관리자는 항상 무제한 |
+| 하루 다운로드 제한 | `1` | `0` 이면 무제한, 관리자는 항상 무제한. 계정 탭에서 사용자별로 따로 정할 수 있음 |
 | 제한 초기화 시각 | `00:00` | 이 시각마다 사용 횟수가 0으로 초기화 |
 | 최대 전자책 크기 | `50MB` | PHP `upload_max_filesize` 보다 작아야 함 |
 | 최대 표지 이미지 크기 | `5MB` | JPG / PNG / WebP |
@@ -221,7 +222,7 @@ Share_Park/
 
 | 파일 | 내용 |
 |---|---|
-| `users.json` | 사용자 (비밀번호는 bcrypt 해시) |
+| `users.json` | 사용자 (비밀번호는 bcrypt 해시, 개인 하루 다운로드 횟수 `download_limit`) |
 | `books.json` | 도서 정보, 표시 순서, 등록자(`owner_id`), 책 소개(`description`) |
 | `settings.json` | 시스템 설정 |
 | `downloads.json` | 다운로드 기록 |

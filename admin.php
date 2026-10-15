@@ -44,6 +44,10 @@ render_header($user, 'admin');
           <input type="text" id="new-password" name="password" class="input" required placeholder="제한 없음" autocomplete="off">
         </div>
         <div class="form-group">
+          <label for="new-limit">하루 다운로드</label>
+          <input type="number" id="new-limit" name="download_limit" class="input" min="0" max="1000" placeholder="기본 설정" title="비우면 전체 설정을 따르고, 0은 무제한입니다">
+        </div>
+        <div class="form-group">
           <label for="new-role">권한</label>
           <select id="new-role" name="is_admin" class="input select">
             <option value="0">일반 사용자</option>
@@ -61,7 +65,7 @@ render_header($user, 'admin');
       </div>
       <div class="table-wrap">
         <table class="table">
-          <thead><tr><th>아이디</th><th>권한</th><th>가입일</th><th>오늘 사용</th><th>누적</th><th class="actions-col">관리</th></tr></thead>
+          <thead><tr><th>아이디</th><th>권한</th><th>가입일</th><th>하루 제한</th><th>오늘 사용</th><th>누적</th><th class="actions-col">관리</th></tr></thead>
           <tbody id="user-table-body"></tbody>
         </table>
       </div>

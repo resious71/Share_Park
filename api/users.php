@@ -6,12 +6,29 @@
  *  POST action=create                   username, password, is_admin
  *  POST action=password                 id, password
  *  POST action=delete                   id
+ *  POST action=set_limit                id, download_limit (빈 값 = 전체 설정 따름, 0 = 무제한, N = 하루 N회)
  *  POST action=reset_limit              id
  *  POST action=reset_all
  */
 require_once __DIR__ . '/../config.php';
 
 $admin = require_admin_api();
+
+/**
+ * 요청의 download_limit 값 해석
+ * 비어 있으면 null(전체 설정 따름), 0~1000 정수만 허용
+ */
+function input_download_limit(): ?int
+{
+    $v = request_input()['download_limit'] ?? null;
+    if ($v === null || $v === '' || $v === 'default') {
+        return null;
+    }
+    if (!is_numeric($v) || (int)$v != $v || (int)$v < 0 || (int)$v > 1000) {
+        json_error('하루 다운로드 횟수는 0~1000 사이의 정수로 입력해 주세요. (0 = 무제한, 비우면 전체 설정 따름)');
+    }
+    return (int)$v;
+}
 
 function user_row(array $u, array $downloads): array
 {
@@ -57,6 +74,7 @@ switch ($action) {
         $username = input_str('username', 50);
         $password = (string)(request_input()['password'] ?? '');
         $isAdmin = input_bool('is_admin');
+        $limit = input_download_limit();
         if (!preg_match('/^[\p{L}\p{N}_.\-]{2,30}$/u', $username)) {
             json_error('아이디는 2~30자의 한글, 영문, 숫자, 밑줄(_), 점(.), 하이픈(-)만 사용할 수 있습니다.');
         }
@@ -64,13 +82,16 @@ switch ($action) {
             json_error('비밀번호를 입력해 주세요.');
         }
         $hash = password_hash($password, PASSWORD_BCRYPT);
-        $created = json_update('users', function (&$users) use ($username, $hash, $isAdmin) {
+        $created = json_update('users', function (&$users) use ($username, $hash, $isAdmin, $limit) {
             foreach ($users as $u) {
                 if (mb_strtolower($u['username']) === mb_strtolower($username)) {
                     return null;
                 }
             }
             $u = ['id' => next_id($users), 'username' => $username, 'password' => $hash, 'is_admin' => $isAdmin, 'created_at' => now()];
+            if ($limit !== null) {
+                $u['download_limit'] = $limit;
+            }
             $users[] = $u;
             return $u;
         });
@@ -131,6 +152,30 @@ switch ($action) {
             });
         }
         json_ok(['message' => "'{$result['username']}' 계정을 삭제했습니다. (다운로드·동의 기록은 보관됩니다)"]);
+
+    case 'set_limit':
+        $id = input_int('id');
+        $limit = input_download_limit();
+        $name = json_update('users', function (&$users) use ($id, $limit) {
+            foreach ($users as &$u) {
+                if ((int)$u['id'] === $id) {
+                    if ($limit === null) {
+                        unset($u['download_limit']);
+                    } else {
+                        $u['download_limit'] = $limit;
+                    }
+                    return $u['username'];
+                }
+            }
+            return null;
+        });
+        if ($name === null) {
+            json_error('사용자를 찾을 수 없습니다.', 404);
+        }
+        $default = (int)setting('daily_download_limit');
+        $label = $limit === null ? '전체 설정(' . ($default > 0 ? "하루 {$default}회" : '무제한') . ')을 따르도록'
+            : ($limit === 0 ? '무제한으로' : "하루 {$limit}회로");
+        json_ok(['message' => "'{$name}' 님의 다운로드 횟수를 {$label} 설정했습니다."]);
 
     case 'reset_limit':
     case 'reset_all':

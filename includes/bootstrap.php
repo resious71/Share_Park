@@ -374,6 +374,7 @@ function public_user(array $u): array
         'username'   => $u['username'],
         'is_admin'   => !empty($u['is_admin']),
         'created_at' => $u['created_at'] ?? '',
+        'download_limit' => user_download_limit($u),
     ];
 }
 
@@ -614,9 +615,23 @@ function downloads_used(array $user, ?array $downloads = null): int
     return $count;
 }
 
+/**
+ * 사용자별 하루 다운로드 제한
+ * @return int|null null = 전체 설정을 따름, 0 = 무제한, 그 밖의 값 = 하루 N회
+ */
+function user_download_limit(array $user): ?int
+{
+    if (!array_key_exists('download_limit', $user) || $user['download_limit'] === null || $user['download_limit'] === '') {
+        return null;
+    }
+    return max(0, (int)$user['download_limit']);
+}
+
 function download_limit_info(array $user, ?array $downloads = null): array
 {
-    $limit = (int)setting('daily_download_limit');
+    $custom = user_download_limit($user);
+    $default = (int)setting('daily_download_limit');
+    $limit = $custom ?? $default;
     $admin = is_admin($user);
     $used = downloads_used($user, $downloads);
     $unlimited = $admin || $limit <= 0;
@@ -626,6 +641,8 @@ function download_limit_info(array $user, ?array $downloads = null): array
         'remaining'    => $unlimited ? null : max(0, $limit - $used),
         'unlimited'    => $unlimited,
         'is_admin'     => $admin,
+        'custom'       => $custom !== null,
+        'default_limit'=> $default,
         'can_download' => $unlimited || $used < $limit,
         'next_reset'   => date('Y-m-d H:i', strtotime('+1 day', period_start())),
     ];

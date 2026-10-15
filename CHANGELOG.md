@@ -5,6 +5,17 @@
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-10-15
+
+### 추가
+- **사용자별 하루 다운로드 횟수**: 관리자가 계정 탭에서 사용자마다 "기본 설정 따르기 · 직접 지정(하루 N회) · 무제한"을 고를 수 있습니다.
+  - 사용자 목록에 "하루 제한" 열과 🎚️ 설정 버튼 추가 (열의 값을 눌러도 열림)
+  - 새 사용자 추가 양식에 "하루 다운로드" 입력 칸 추가 (비우면 기본 설정)
+  - 도서 목록 배너, 마이페이지, 서버의 다운로드 제한 검사에 모두 개인 횟수 적용
+- `users.json` 에 `download_limit` 필드 추가 (없으면 전체 설정을 따름, 기존 데이터 호환)
+- API: `api/users.php` 에 `set_limit` 동작 추가, `create` 에서 `download_limit` 지정 가능
+- FAQ 1개 추가 (총 20개), 도움말 갱신, 스모크 테스트 12개 추가 (총 55개)
+
 ## [1.3.0] - 2026-10-15
 
 ### 추가
@@ -75,7 +86,8 @@
 - PDF/EPUB 표지 하이브리드 추출
 - JSON 파일 저장소와 자동 초기화
 
-[Unreleased]: https://github.com/resious71/Share_Park/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/resious71/Share_Park/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/resious71/Share_Park/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/resious71/Share_Park/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/resious71/Share_Park/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/resious71/Share_Park/compare/v1.0.1...v1.1.0

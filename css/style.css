@@ -400,6 +400,12 @@ tr.sortable-dragging { transform: none !important; background: var(--primary-sof
 .pagination button.active { background: var(--primary); border-color: var(--primary); color: var(--text); }
 .pagination button:disabled { opacity: .4; cursor: not-allowed; }
 
+/* 사용자별 다운로드 횟수 설정 */
+.limit-options { display: flex; flex-direction: column; gap: 8px; }
+.limit-options .checkbox input[type="radio"] { accent-color: var(--primary-strong); }
+.limit-custom { display: inline-flex; align-items: center; gap: 6px; margin-left: 8px; }
+.limit-custom .input { width: 90px; padding: 6px 10px; }
+
 /* 표 머리 · 꼬리 (페이지당 개수, 페이지네이션) */
 .page-size { display: inline-flex; align-items: center; gap: 6px; }
 .table-hint { margin: -6px 0 10px; }
