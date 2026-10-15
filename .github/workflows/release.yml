@@ -1,0 +1,98 @@
+name: Release
+
+# 수동 실행: Actions → Release → Run workflow
+# 태그(vX.Y.Z)를 만들고 GitHub 릴리스를 등록합니다.
+# 릴리스 노트는 docs/releases/vX.Y.Z.md 가 있으면 그 파일을, 없으면 CHANGELOG.md 의 해당 버전 섹션을 사용합니다.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '릴리스 버전 (예: 1.4.0)'
+        required: true
+      ref:
+        description: '태그를 붙일 브랜치 또는 커밋 (기본: main)'
+        required: false
+        default: 'main'
+      extra_tags:
+        description: '함께 만들 이전 버전 태그, 공백으로 구분 (예: v1.0.0@dc4a781 v1.1.0@8dd7fd4)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 입력값 확인
+        env:
+          VERSION: ${{ inputs.version }}
+          EXTRA: ${{ inputs.extra_tags }}
+        run: |
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::버전 형식이 올바르지 않습니다: $VERSION (예: 1.4.0)"; exit 1; }
+          for item in $EXTRA; do
+            [[ "$item" =~ ^v[0-9]+\.[0-9]+\.[0-9]+@[0-9a-f]{7,40}$ ]] || { echo "::error::이전 태그 형식이 올바르지 않습니다: $item (예: v1.0.0@dc4a781)"; exit 1; }
+          done
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: 이전 버전 태그 만들기
+        if: inputs.extra_tags != ''
+        env:
+          EXTRA: ${{ inputs.extra_tags }}
+        run: |
+          for item in $EXTRA; do
+            tag="${item%@*}"; sha="${item#*@}"
+            if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+              echo "이미 있음: $tag"
+            else
+              git tag -a "$tag" "$sha" -m "Share Park $tag"
+              git push origin "refs/tags/$tag"
+              echo "생성: $tag → $sha"
+            fi
+          done
+
+      - name: 릴리스 노트 준비
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          file="docs/releases/v${VERSION}.md"
+          if [ -f "$file" ]; then
+            cp "$file" notes.md
+          else
+            awk -v v="$VERSION" '
+              $0 ~ "^## \\[" v "\\]" { on = 1; next }
+              on && /^## \[/ { exit }
+              on { print }
+            ' CHANGELOG.md > notes.md
+            printf '\n전체 변경 내역: [CHANGELOG.md](https://github.com/%s/blob/main/CHANGELOG.md)\n' "$GITHUB_REPOSITORY" >> notes.md
+          fi
+          [ -s notes.md ] || { echo "::error::v${VERSION} 릴리스 노트를 찾을 수 없습니다. docs/releases/v${VERSION}.md 또는 CHANGELOG.md 를 확인해 주세요."; exit 1; }
+          cat notes.md
+
+      - name: 태그와 릴리스 만들기
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+          REF: ${{ inputs.ref }}
+        run: |
+          tag="v${VERSION}"
+          sha=$(git rev-parse --verify -q "origin/${REF}^{commit}" || git rev-parse --verify "${REF}^{commit}")
+          if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+            echo "태그가 이미 있습니다: $tag"
+          else
+            git tag -a "$tag" "$sha" -m "Share Park $tag"
+            git push origin "refs/tags/$tag"
+          fi
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "::warning::릴리스 $tag 가 이미 있어 노트만 갱신합니다."
+            gh release edit "$tag" --title "Share Park $tag" --notes-file notes.md
+          else
+            gh release create "$tag" --title "Share Park $tag" --notes-file notes.md --verify-tag --latest
+          fi
+          echo "릴리스: https://github.com/${GITHUB_REPOSITORY}/releases/tag/$tag" >> "$GITHUB_STEP_SUMMARY"
