@@ -190,10 +190,39 @@
   // ===========================================================================
   const bookBody = $('#book-table-body');
 
-  async function loadBooks() {
+  const bookPageSize = $('#book-page-size');
+  const bookPagination = $('#book-pagination');
+  const bookPageInfo = $('#book-page-info');
+  const PAGE_SIZE_KEY = 'sharepark.admin.books.pageSize';
+  state.books = [];
+  state.bookPage = 1;
+  state.bookPageSize = Number(SP.storage.get(PAGE_SIZE_KEY, '10'));
+  if (![10, 20, 50, 0].includes(state.bookPageSize)) state.bookPageSize = 10;
+  bookPageSize.value = String(state.bookPageSize);
+
+  const bookPages = () => (state.bookPageSize ? Math.max(1, Math.ceil(state.books.length / state.bookPageSize)) : 1);
+
+  /** @param {{toLast?: boolean}} opts 업로드 직후에는 새 책이 있는 마지막 페이지로 이동 */
+  async function loadBooks(opts = {}) {
     try {
       const res = await SP.api('api/books.php?action=list');
-      bookBody.innerHTML = res.books.length ? res.books.map((b) => `
+      state.books = res.books;
+      if (opts.toLast) state.bookPage = bookPages();
+      renderBooks();
+    } catch (err) {
+      SP.toast(err.message, 'error');
+    }
+  }
+
+  function renderBooks() {
+    const books = state.books;
+    const pages = bookPages();
+    state.bookPage = Math.min(Math.max(1, state.bookPage), pages);
+    const size = state.bookPageSize || books.length;
+    const start = (state.bookPage - 1) * size;
+    const list = books.slice(start, start + size);
+
+    bookBody.innerHTML = list.length ? list.map((b) => `
         <tr data-id="${b.id}">
           <td><button type="button" class="row-handle" aria-label="'${esc(b.title)}' 순서 이동 (방향키 사용 가능)" title="끌어서 순서 변경">⠿</button></td>
           <td><img class="thumb" src="${esc(b.cover_url)}" alt="" loading="lazy" draggable="false" title="${esc(SP.COVER_LABELS[b.cover_source] || '')}"></td>
@@ -211,22 +240,45 @@
             <button type="button" class="btn btn-danger btn-sm js-delete" title="삭제">🗑️</button>
           </td>
         </tr>`).join('') : '<tr class="empty-row"><td colspan="10">📭 아직 등록된 책이 없습니다. 위에서 첫 번째 책을 등록해 보세요.</td></tr>';
-      state.books = res.books;
-    } catch (err) {
-      SP.toast(err.message, 'error');
-    }
+
+    bookPageInfo.textContent = books.length ? `전체 ${books.length}권 중 ${start + 1}–${start + list.length}번째` : '';
+    bookPagination.innerHTML = SP.paginationHtml(state.bookPage, pages);
   }
+
+  bookPagination.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-page]');
+    if (!b || b.disabled) return;
+    state.bookPage = Number(b.dataset.page);
+    renderBooks();
+    bookBody.closest('.card').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  });
+
+  bookPageSize.addEventListener('change', () => {
+    // 지금 보던 첫 번째 책이 계속 보이도록 페이지를 다시 계산
+    const firstIndex = (state.bookPage - 1) * (state.bookPageSize || state.books.length);
+    state.bookPageSize = Number(bookPageSize.value);
+    SP.storage.set(PAGE_SIZE_KEY, String(state.bookPageSize));
+    state.bookPage = state.bookPageSize ? Math.floor(firstIndex / state.bookPageSize) + 1 : 1;
+    renderBooks();
+  });
 
   SP.makeSortable(bookBody, {
     item: 'tr[data-id]',
     handle: '.row-handle',
-    onEnd: (ids) => run(SP.api('api/books.php', { data: { action: 'reorder', order: ids.map(Number) } })),
+    // 현재 페이지의 새 순서를 전체 목록의 같은 위치에 반영해 저장
+    onEnd: (ids) => {
+      const size = state.bookPageSize || state.books.length;
+      const start = (state.bookPage - 1) * size;
+      const byId = new Map(state.books.map((b) => [String(b.id), b]));
+      state.books.splice(start, ids.length, ...ids.map((id) => byId.get(id)));
+      run(SP.api('api/books.php', { data: { action: 'reorder', order: state.books.map((b) => b.id) } }));
+    },
   });
 
   bookBody.addEventListener('click', (e) => {
     const row = e.target.closest('tr[data-id]');
     if (!row) return;
-    const book = (state.books || []).find((b) => b.id === Number(row.dataset.id));
+    const book = state.books.find((b) => b.id === Number(row.dataset.id));
     if (!book) return;
     if (e.target.closest('.js-edit')) SP.editBook(book, loadBooks);
     if (e.target.closest('.js-delete')) SP.deleteBook(book, loadBooks);
@@ -267,7 +319,7 @@
     });
   }
 
-  const uploader = SP.initUploader({ onUploaded: loadBooks });
+  const uploader = SP.initUploader({ onUploaded: () => loadBooks({ toLast: true }) });
 
   // ===========================================================================
   // 설정

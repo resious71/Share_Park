@@ -39,15 +39,7 @@
   }
 
   function renderPagination(page, pages) {
-    if (pages <= 1) { pagination.innerHTML = ''; return; }
-    const btn = (p, label, opts = {}) =>
-      `<button type="button" data-page="${p}" ${opts.disabled ? 'disabled' : ''} class="${opts.active ? 'active' : ''}" ${opts.active ? 'aria-current="page"' : ''} aria-label="${opts.aria || p + '페이지'}">${label}</button>`;
-    let html = btn(page - 1, '‹', { disabled: page <= 1, aria: '이전 페이지' });
-    const start = Math.max(1, Math.min(page - 2, pages - 4));
-    const end = Math.min(pages, start + 4);
-    for (let p = start; p <= end; p++) html += btn(p, p, { active: p === page });
-    html += btn(page + 1, '›', { disabled: page >= pages, aria: '다음 페이지' });
-    pagination.innerHTML = html;
+    pagination.innerHTML = SP.paginationHtml(page, pages);
   }
 
   pagination.addEventListener('click', (e) => {

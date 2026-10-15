@@ -390,6 +390,12 @@ tr.sortable-dragging { transform: none !important; background: var(--primary-sof
 .pagination button.active { background: var(--primary); border-color: var(--primary); color: var(--text); }
 .pagination button:disabled { opacity: .4; cursor: not-allowed; }
 
+/* 표 머리 · 꼬리 (페이지당 개수, 페이지네이션) */
+.page-size { display: inline-flex; align-items: center; gap: 6px; }
+.table-hint { margin: -6px 0 10px; }
+.table-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+.table-footer .pagination { margin-top: 0; }
+
 /* ---------- 업로드 ---------- */
 .dropzone {
   border: 2.5px dashed #d6d2ff; border-radius: var(--radius-lg); padding: 28px 16px;
