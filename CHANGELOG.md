@@ -7,6 +7,10 @@
 
 ### 추가
 - 릴리스 워크플로우(`.github/workflows/release.yml`): Actions 에서 버전을 입력해 실행하면 태그와 GitHub 릴리스를 자동으로 만듭니다. 릴리스 노트는 `docs/releases/vX.Y.Z.md` 또는 CHANGELOG 를 사용합니다.
+- v1.0.0 릴리스 노트(`docs/releases/v1.0.0.md`)
+
+### 변경
+- 릴리스 워크플로우: 가장 높은 버전일 때만 "최신(Latest)" 릴리스로 표시 (이전 버전 릴리스를 나중에 추가해도 최신이 바뀌지 않음)
 
 ## [1.4.0] - 2026-10-15
 
