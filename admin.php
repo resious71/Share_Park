@@ -75,13 +75,26 @@ render_header($user, 'admin');
     <div class="card">
       <div class="card-header">
         <h2 class="card-title">등록된 책 <?= help_btn('order') ?></h2>
-        <span class="muted small">⠿ 손잡이로 기본 표시 순서 변경 · 다운로드 횟수를 누르면 다운로드한 사용자를 볼 수 있습니다</span>
+        <label class="page-size">
+          <span class="muted small">페이지당</span>
+          <select id="book-page-size" class="input select small" aria-label="페이지당 책 수">
+            <option value="10">10권</option>
+            <option value="20">20권</option>
+            <option value="50">50권</option>
+            <option value="0">전체</option>
+          </select>
+        </label>
       </div>
+      <p class="muted small table-hint">⠿ 손잡이로 기본 표시 순서 변경(보고 있는 페이지 안에서) · 다운로드 횟수를 누르면 다운로드한 사용자를 볼 수 있습니다</p>
       <div class="table-wrap">
         <table class="table">
           <thead><tr><th class="handle-col"></th><th>표지</th><th>제목</th><th>저자</th><th>등록자</th><th>형식</th><th>등록일</th><th>크기</th><th>다운로드</th><th class="actions-col">관리</th></tr></thead>
           <tbody id="book-table-body"></tbody>
         </table>
+      </div>
+      <div class="table-footer">
+        <span id="book-page-info" class="muted small"></span>
+        <div id="book-pagination" class="pagination"></div>
       </div>
     </div>
   </section>

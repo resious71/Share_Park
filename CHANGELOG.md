@@ -5,6 +5,18 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-15
+
+### 추가
+- 관리자 도서 탭 "등록된 책" 표에 페이지네이션 추가: 첫 · 이전 · 번호 · 다음 · 마지막 페이지 버튼과 "전체 N권 중 a–b번째" 표시
+- 페이지당 표시 개수 선택(10 · 20 · 50권 · 전체), 선택값은 브라우저에 기억
+- 새 책을 업로드하면 그 책이 있는 마지막 페이지로 자동 이동
+- 드래그 순서 변경은 보고 있는 페이지 안에서 동작하며, 다른 페이지의 순서는 그대로 유지
+- FAQ 1개 추가 (총 19개), 도움말 갱신
+
+### 변경
+- 페이지네이션 버튼을 공용 함수(`SP.paginationHtml`)로 분리해 마이페이지 다운로드 히스토리와 함께 사용
+
 ## [1.1.0] - 2026-10-15
 
 ### 추가
@@ -52,7 +64,8 @@
 - PDF/EPUB 표지 하이브리드 추출
 - JSON 파일 저장소와 자동 초기화
 
-[Unreleased]: https://github.com/resious71/Share_Park/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/resious71/Share_Park/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/resious71/Share_Park/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/resious71/Share_Park/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/resious71/Share_Park/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/resious71/Share_Park/releases/tag/v1.0.0
