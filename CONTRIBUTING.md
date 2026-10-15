@@ -65,4 +65,11 @@ refactor: 표지 추출 함수 분리
 4. 사용자에게 보이는 변경은 [CHANGELOG.md](CHANGELOG.md)의 `Unreleased` 에 적어 주세요.
 5. PR 템플릿의 체크리스트를 채워 주세요.
 
+## 릴리스 만들기 (관리자)
+
+1. `CHANGELOG.md` 에 새 버전 섹션(`## [X.Y.Z] - 날짜`)을 쓰고 `config.php` 의 `APP_VERSION` 을 올려 `main` 에 합칩니다.
+2. 필요하면 `docs/releases/vX.Y.Z.md` 에 릴리스 노트를 따로 씁니다. 없으면 CHANGELOG 의 해당 버전 내용이 그대로 쓰입니다.
+3. GitHub **Actions → Release → Run workflow** 에서 버전(예: `1.5.0`)을 입력하고 실행합니다.
+   워크플로우가 `vX.Y.Z` 태그를 만들고 GitHub 릴리스를 등록합니다.
+
 감사합니다! 💜

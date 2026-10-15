@@ -5,6 +5,9 @@
 
 ## [Unreleased]
 
+### 추가
+- 릴리스 워크플로우(`.github/workflows/release.yml`): Actions 에서 버전을 입력해 실행하면 태그와 GitHub 릴리스를 자동으로 만듭니다. 릴리스 노트는 `docs/releases/vX.Y.Z.md` 또는 CHANGELOG 를 사용합니다.
+
 ## [1.4.0] - 2026-10-15
 
 ### 추가
