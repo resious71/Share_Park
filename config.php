@@ -8,7 +8,7 @@
  */
 
 define('APP_NAME', 'Share Park');
-define('APP_VERSION', '1.2.0');
+define('APP_VERSION', '1.3.0');
 define('APP_ROOT', __DIR__);
 define('DATA_DIR', __DIR__ . '/data');
 

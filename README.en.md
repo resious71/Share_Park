@@ -22,7 +22,7 @@ No database required: it runs on **plain PHP + JSON files**.
 
 ## Features
 
-- **Book tiles**: 2/3/4/6-column responsive grid, search by title or author, sort by popularity, title, author, date added or custom order
+- **Book tiles**: 2/3/4/6-column responsive grid with 12 books per page, translucent overlays that keep covers visible, search by title or author, sort by popularity, title, author, date added or custom order
 - **Drag & drop ordering**: each user can save a personal order (mouse, touch and keyboard)
 - **Book details**: click a card to see the cover, description, download count and uploader
 - **Popular top 3**: the three most downloaded books get a light blue border and a 🏆 rank badge; every card shows its download count

@@ -5,6 +5,17 @@
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-15
+
+### 추가
+- 도서 목록 페이지네이션: 한 페이지에 12권씩 표시하고, 아래에 페이지 번호와 "전체 N권 중 a–b번째" 표시
+  - 검색어나 정렬을 바꾸면 1페이지로 이동
+  - 드래그 순서 변경은 보고 있는 페이지 안에서 동작하며, 다른 페이지의 순서는 그대로 유지
+
+### 변경
+- 책 표지 위의 표시(드래그 손잡이 · PDF/EPUB 형식 · 🏆 인기 배지)를 반투명으로 바꿔 표지 그림을 가리지 않도록 함. 마우스를 올리거나 포커스하면 또렷하게 보임
+- README 도서 목록 스크린샷 갱신
+
 ## [1.2.0] - 2026-10-15
 
 ### 추가
@@ -64,7 +75,8 @@
 - PDF/EPUB 표지 하이브리드 추출
 - JSON 파일 저장소와 자동 초기화
 
-[Unreleased]: https://github.com/resious71/Share_Park/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/resious71/Share_Park/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/resious71/Share_Park/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/resious71/Share_Park/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/resious71/Share_Park/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/resious71/Share_Park/compare/v1.0.0...v1.0.1
